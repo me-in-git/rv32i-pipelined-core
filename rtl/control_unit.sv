@@ -94,6 +94,7 @@ module control_unit #(
             7'b0110111: begin // LUI
                 reg_write = 1'b1;
                 alu_src_b = 2'b10;
+                alu_ctrl  = 4'b1010;   // rd = imm, the rs1 field is part of the immediate
             end
             7'b0010111: begin // AUIPC
                 reg_write    = 1'b1;

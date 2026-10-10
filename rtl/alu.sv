@@ -31,6 +31,7 @@ module alu #(
             4'b0111: alu_result = shift_right_arith;     // SRA
             4'b1000: alu_result = ($signed(src_a) < $signed(src_b)) ? 32'b1 : 32'b0; // SLT
             4'b1001: alu_result = ($unsigned(src_a) < $unsigned(src_b)) ? 32'b1 : 32'b0; // SLTU
+            4'b1010: alu_result = src_b;                 // pass B (LUI)
             default: alu_result = 32'b0;
         endcase
     end
