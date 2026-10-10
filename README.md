@@ -22,10 +22,13 @@ make test      # needs icarus verilog 12+
 | `tb_branch` | taken branch flushes the wrong-path instruction |
 | `tb_rv32i_seq` | single-cycle core vs a golden model after every instruction |
 | `tb_sort` | 8-element bubble sort on the pipeline |
+| `tb_lockstep` | runs 3 programs on both cores and compares every register write and store they commit |
 
 ```
 PASS: core halted at ECALL after 526 cycles
 === SORT_TEST: ALL PASS (8-element bubble sort) ===
+PASS: bubble_sort: 284 commits identical (pipeline 526 cycles, single-cycle 391 cycles)
+=== LOCKSTEP_TEST: ALL PASS (3 programs, 301 commits compared) ===
 ```
 
 ## Not done yet

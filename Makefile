@@ -3,7 +3,7 @@
 #   make run-<tb>     - run a single testbench, e.g. make run-tb_rv32i_top
 #   make clean
 
-TESTS ?= tb_rv32i_top tb_branch tb_rv32i_seq tb_sort
+TESTS ?= tb_rv32i_top tb_branch tb_rv32i_seq tb_sort tb_lockstep
 SRC   := $(wildcard rtl/*.sv)
 BUILD := build
 
