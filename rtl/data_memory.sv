@@ -27,17 +27,38 @@ module data_memory #(
         endcase
     end
 
-    // Byte-merged word for a RMW write
+    // store data moved into its byte lane, then merged into the word
+    logic [31:0] wdata_lane;
+    assign wdata_lane = wdata << {addr[1:0], 3'b000};
+
     always_comb begin
         word_out = data[addr[31:2]];
-        if (byte_en[0]) word_out[7:0]   = wdata[7:0];
-        if (byte_en[1]) word_out[15:8]  = wdata[15:8];
-        if (byte_en[2]) word_out[23:16] = wdata[23:16];
-        if (byte_en[3]) word_out[31:24] = wdata[31:24];
+        if (byte_en[0]) word_out[7:0]   = wdata_lane[7:0];
+        if (byte_en[1]) word_out[15:8]  = wdata_lane[15:8];
+        if (byte_en[2]) word_out[23:16] = wdata_lane[23:16];
+        if (byte_en[3]) word_out[31:24] = wdata_lane[31:24];
     end
 
     // Asynchronous read (combinationally available to WB)
-    assign rdata = mem_read ? data[addr[31:2]] : 32'b0;
+    // LB/LH sign-extend, LBU/LHU zero-extend
+    logic [31:0] word_r, load_val;
+    logic [7:0]  byte_r;
+    logic [15:0] half_r;
+    assign word_r = data[addr[31:2]];
+    assign byte_r = word_r >> {addr[1:0], 3'b000};
+    assign half_r = addr[1] ? word_r[31:16] : word_r[15:0];
+
+    always_comb begin
+        case (mem_size)
+            3'b000:  load_val = {{24{byte_r[7]}}, byte_r};   // LB
+            3'b001:  load_val = {{16{half_r[15]}}, half_r};  // LH
+            3'b100:  load_val = {24'b0, byte_r};             // LBU
+            3'b101:  load_val = {16'b0, half_r};             // LHU
+            default: load_val = word_r;                      // LW
+        endcase
+    end
+
+    assign rdata = mem_read ? load_val : 32'b0;
 
     // Synchronous write
     always_ff @(posedge clk) begin
