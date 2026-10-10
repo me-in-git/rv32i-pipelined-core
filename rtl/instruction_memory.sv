@@ -10,6 +10,9 @@ module instruction_memory #(
 
     logic [31:0] mem [DEPTH-1:0];
 
+    // default to NOP so fetches past the program never decode X
+    initial for (int i = 0; i < DEPTH; i++) mem[i] = 32'h0000_0013;
+
     // Asynchronous (combinational) read: instruction appears in the same
     // cycle as the PC, making IF/ID sampling deterministic on the edge.
     assign inst = mem[pc[31:2]];
