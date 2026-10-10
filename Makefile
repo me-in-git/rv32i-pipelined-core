@@ -3,7 +3,7 @@
 #   make run-<tb>     - run a single testbench, e.g. make run-tb_rv32i_top
 #   make clean
 
-TESTS ?= tb_rv32i_top tb_branch tb_rv32i_seq tb_sort tb_lockstep
+TESTS ?= tb_rv32i_top tb_branch tb_rv32i_seq tb_sort tb_lockstep tb_isa
 SRC   := $(wildcard rtl/*.sv)
 BUILD := build
 
@@ -17,8 +17,8 @@ run-%: $(BUILD)/%.vvp
 	@! grep -qE "FAIL|ERROR:" $(BUILD)/$*.log
 	@grep -qE "ALL PASS|: 0 error\(s\)" $(BUILD)/$*.log
 
-$(BUILD)/%.vvp: $(SRC) tb/%.sv | $(BUILD)
-	iverilog -g2012 -s $* -o $@ $(SRC) tb/$*.sv
+$(BUILD)/%.vvp: $(SRC) tb/%.sv $(wildcard tb/*.svh) | $(BUILD)
+	iverilog -g2012 -I tb -s $* -o $@ $(SRC) tb/$*.sv
 
 $(BUILD):
 	mkdir -p $@

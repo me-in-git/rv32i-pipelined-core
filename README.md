@@ -3,6 +3,7 @@
 [![simulation](https://github.com/me-in-git/rv32i-pipelined-core/actions/workflows/sim.yml/badge.svg)](https://github.com/me-in-git/rv32i-pipelined-core/actions/workflows/sim.yml)
 
 5-stage pipelined RV32I core in SystemVerilog, plus a single-cycle version of the same core used as a reference.
+Implements the RV32I base integer instructions except FENCE, EBREAK and CSRs.
 
 - IF / ID / EX / MEM / WB
 - forwarding from MEM and WB into EX
@@ -23,12 +24,14 @@ make test      # needs icarus verilog 12+
 | `tb_rv32i_seq` | single-cycle core vs a golden model after every instruction |
 | `tb_sort` | 8-element bubble sort on the pipeline |
 | `tb_lockstep` | runs 3 programs on both cores and compares every register write and store they commit |
+| `tb_isa` | one program using every implemented instruction, final registers/memory of both cores vs a Python model (`scripts/gen_isa_test.py`) |
 
 ```
 PASS: core halted at ECALL after 526 cycles
 === SORT_TEST: ALL PASS (8-element bubble sort) ===
 PASS: bubble_sort: 284 commits identical (pipeline 526 cycles, single-cycle 391 cycles)
 === LOCKSTEP_TEST: ALL PASS (3 programs, 301 commits compared) ===
+=== ISA_TEST: ALL PASS (56 instructions) ===
 ```
 
 ## Not done yet
