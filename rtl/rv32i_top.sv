@@ -30,7 +30,8 @@ module rv32i_top #(
     // Branch/jump resolved in EX: use the EX-stage instruction's own PC and
     // offset (exmem_* would be the previous instruction -> wrong target).
     assign branch_target = idex_pc + idex_imm;
-    assign jump_target   = alu_result_out;   // JALR result computed in EX
+    assign jump_target   = (idex_pc_src == 2'b11) ? idex_pc + idex_imm_u     // JAL
+                                                : alu_result_out & ~32'h1;  // JALR
 
 always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n)                  pc <= 32'h0000_0000;
@@ -245,7 +246,7 @@ hazard_detection_unit hdu (
             exmem_alu_out <= 32'd0; exmem_rs2 <= 32'd0; exmem_pc_out <= 32'd0;
             exmem_branch_imm <= 32'd0; exmem_rd <= 5'd0;
         end else begin
-            exmem_alu_out    <= alu_result_out;
+            exmem_alu_out    <= idex_jump ? idex_pc + 32'd4 : alu_result_out;  // link for JAL/JALR
             exmem_rs2        <= rs2_fwd;
             exmem_pc_out     <= idex_pc;
             exmem_branch_imm <= idex_imm;
