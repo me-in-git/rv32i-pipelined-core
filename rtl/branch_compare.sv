@@ -9,6 +9,7 @@ module branch_compare (
     logic eq, ne, lt, ge, ltu, geu;
 
     assign eq  = (a == b);
+    assign ne  = !eq;
     assign lt  = ($signed(a) < $signed(b));
     assign ge  = !lt;
     assign ltu = ($unsigned(a) < $unsigned(b));
