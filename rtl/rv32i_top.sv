@@ -48,8 +48,13 @@ always_ff @(posedge clk or negedge rst_n) begin
     // IF/ID REGISTER
     logic [31:0] if_id_pc, if_id_inst;
 
-    always_ff @(posedge clk) begin
-        if (if_write_en) begin
+    // reset to NOP, otherwise instr 0 issues twice after reset
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            if_id_pc   <= 32'h0000_0000;
+            if_id_inst <= 32'h0000_0013;
+        end
+        else if (if_write_en) begin
             if_id_pc   <= pc;
             if_id_inst <= (flush_if_id) ? 32'h0000_0013 : inst;
         end
